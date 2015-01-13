@@ -496,6 +496,17 @@ module Compute
       res = JSON.generate(response)
     end
 
+    ### OTHER
+
+    def get_console(opts = {})
+      data = JSON.generate({"os-getVNCConsole" => {:type=>"novnc"}})
+      check_extension 'os-consoles'
+      server_id = opts[:server_id]
+      raise ArgumentError, 'Does not include server_id' if server_id.nil?
+      response = @connection.req('POST', "/servers/#{server_id}/action", {:data => data})
+      res = JSON.parse(response.body)['console']['url']
+    end
+
     private
 
     def check_extension(name)
