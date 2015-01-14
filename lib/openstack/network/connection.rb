@@ -151,6 +151,19 @@ module Network
       end
     end
 
+    def limits(tenant_id)
+      raise ArgumentError, 'Tenant id must be specifed.' if tenant_id.nil? || tenant_id.empty?
+      response = @connection.req('GET', "/quotas/" + tenant_id)
+      JSON.parse(response.body)["quota"]
+    end
+
+    def set_limits(tenant_id, options)
+      raise ArgumentError, 'Tenant id must be specifed.' if tenant_id.nil? || tenant_id.empty?
+      data = JSON.generate({:quota => options})
+      response = @connection.req('PUT', "/quotas/" + tenant_id, {:data => data})
+      JSON.parse(response.body)["quota"]
+    end
+
   end
 
 end
