@@ -477,7 +477,7 @@ module Compute
       true
     end
 
-    def get_floating_ip_polls
+    def get_floating_ip_pools
       check_extension 'os-floating-ip-pools'
       response = @connection.req('GET', '/os-floating-ip-pools')
       res = JSON.parse(response.body)['floating_ip_pools']
