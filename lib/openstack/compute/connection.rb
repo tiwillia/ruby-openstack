@@ -211,6 +211,18 @@ module Compute
       OpenStack::Exception.raise_exception(response) unless response.code.match(/^20.$/)
       OpenStack.symbolize_keys(JSON.parse(response.body)['limits'])
     end
+    alias :quotas :limits
+
+    # Requires a tenant id and a hash of quota settings to be changed
+    # See the below for a list of possible quotas:
+    #   http://docs.openstack.org/api/openstack-compute/2/content/PUT_os-quota-sets-v2_updateQuota__v2__tenant_id__os-quota-sets__tenant_id__ext-os-quota-sets.html
+    def set_limits(tenant_id, options)
+      check_extension 'os-quota-sets'
+      raise ArgumentError, 'Tenant id must be specifed.' if tenant_id.nil? || tenant_id.empty?
+      data = JSON.generate({:quota_set => options})
+      response = @connection.req('PUT', "/os-quota-sets/" + tenant_id, {:data => data})
+      res = JSON.parse(response.body)["quota_set"]
+    end
 
 # ==============================
 #  API EXTENSIONS
