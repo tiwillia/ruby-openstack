@@ -401,9 +401,13 @@ module Compute
     end
 
 #VOLUMES - attach detach
-    def attach_volume(server_id, volume_id, device_id)
+    def attach_volume(server_id, volume_id, device_id=nil)
       raise OpenStack::Exception::NotImplemented.new("os-volumes not implemented by #{@connection.http.keys.first}", 501, "NOT IMPLEMENTED") unless api_extensions[:"os-volumes"]
-      data = JSON.generate(:volumeAttachment => {"volumeId" => volume_id, "device"=> device_id})
+      if device_id
+        data = JSON.generate(:volumeAttachment => {"volumeId" => volume_id, "device"=> device_id})
+      else
+        data = JSON.generate(:volumeAttachment => {"volumeId" => volume_id})
+      end
       response = @connection.req("POST", "/servers/#{server_id}/os-volume_attachments", {:data=>data})
       true
     end
